@@ -1,5 +1,5 @@
 # protochess
-A simple chess engine (works quick up to a depth of 5 ply, slows down after that depth)
+A simple chess engine (works quick up to a depth of 5 ply, slows down after that depth) (with qSearch implemented, it is slow at 4 ply, but plays at a higher elo)
 simple evaluation, negaMax with alpha-beta pruning + small opening book.
 This engine is not really intended to be a good chess player, just a learning experience. There are lots of improvements to be made:
 for example, you could add better quiescence search, transposition tables, negaScout, better evaluation function, and much more
