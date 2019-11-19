@@ -14,3 +14,5 @@ to play against the computer as white, type play() <br />
 to watch the computers play eachother, type play_itself() <br />
 to analyze a position type analyze() 
   
+# Elo
+after testing with lichess stockfish, it performs on the same level as stockfish level 4-5 at depth 4, so rough ELO guess would be 1400
