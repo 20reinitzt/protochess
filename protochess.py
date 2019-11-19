@@ -5,7 +5,6 @@ import chess.polyglot
 
 
 # Parameters will be implemented soon
-bias = 10
 bPawnTable = [0,  0,  0,  0,  0,  0,  0,  0,
 50, 50, 50, 50, 50, 50, 50, 50,
 10, 10, 20, 30, 30, 20, 10, 10,
@@ -133,7 +132,7 @@ def qSearch(board, alpha, beta, color, depth=0, maxDepth=2):
             if score >= beta:
                 return beta
             if score > alpha:
-                return alpha
+                alpha = score
     return alpha
 
 def move(board, depth, color):
