@@ -142,6 +142,7 @@ def move(board, depth, color):
     try:
         reader = chess.polyglot.open_reader('book\\book.bin')
     except FileNotFoundError:
+        print('No opening book found. make sure you have it in the right folder (path should be ..\\book.bin)')
         bestMove, value = negaMaxRoot(board, depth, -inf, inf, color)
         return bestMove, value, 0
     try:
