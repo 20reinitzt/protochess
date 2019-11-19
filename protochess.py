@@ -124,8 +124,8 @@ def qSearch(board, alpha, beta, color, depth=0, maxDepth=2):
     if alpha < value:
         alpha = value
     if depth < maxDepth:
-        moves = list(board.generate_legal_moves())
-        for move in (move for move in moves if board.is_capture(move)):
+        captureMoves = (move for move in board.generate_legal_moves() if board.is_capture(move))
+        for move in captureMoves:
             board.push(move)
             score = -1 * qSearch(board, -beta, -alpha, -color, depth + 1)
             board.pop()
@@ -230,7 +230,6 @@ def play_itself(fen=''):
     if input('play?') == 'y':
         depth = int(input('Search Depth (Don\'t go over 5 yet): '))
         movesToPlay = int(input('# of moves for each computer to play (type 0 for continuous play): ')) * 2
-        print(board.move_stack)
         while (not board.is_game_over()) and (movesToPlay > len(board.move_stack) or movesToPlay == 0):
             start = time()
             if board.turn:
