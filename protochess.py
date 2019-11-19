@@ -101,6 +101,8 @@ def negaMax(board, depth, alpha, beta, color):
     positions += 1
     # improvement: test for quiet positions, and add quiescence search for Horizon effect mitigation
     if depth == 0:
+        if board.is_capture(board.peek()):
+            return qSearch(board, -inf, inf, color)
         return color * evaluateBoard(board)
     value = -inf
     moves = board.generate_legal_moves()
@@ -112,6 +114,27 @@ def negaMax(board, depth, alpha, beta, color):
         if alpha >= beta:
             break
     return value
+
+# starting the quiescence search code
+def qSearch(board, alpha, beta, color, depth=0, maxDepth=2):
+    global positions
+    positions += 1
+    value = color * evaluateBoard(board)
+    if value >= beta:
+        return beta
+    if alpha < value:
+        alpha = value
+    if depth < maxDepth:
+        moves = list(board.generate_legal_moves())
+        for move in (move for move in moves if board.is_capture(move)):
+            board.push(move)
+            score = -1 * qSearch(board, -beta, -alpha, -color, depth + 1)
+            board.pop()
+            if score >= beta:
+                return beta
+            if score > alpha:
+                return alpha
+    return alpha
 
 def move(board, depth, color):
     global positions
