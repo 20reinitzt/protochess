@@ -4,7 +4,7 @@ simple evaluation, negaMax with alpha-beta pruning + small opening book
 
 use pip install python-chess to install dependencies
 
-Pypy3 is recommended, as it runs about 4-5x faster on pypy3 (20000 pos/s vs 100000 pos/s)
+Pypy3 is recommended, as it runs about 4-5x faster on pypy3 (100,000 nodes/s on pypy vs 20,000 nodes/s on python3)
 
 # Usage
 to initialize, type from chessEngine import *
