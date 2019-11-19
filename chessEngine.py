@@ -78,6 +78,7 @@ def evaluateBoard(board):
         evaluation += 100*(len(white_pawns) - len(black_pawns)) + 310*(len(white_knights) - len(black_knights)) + 320*(len(white_bishops) - len(black_bishops)) + 500*(len(white_rooks) - len(black_rooks)) + 900*(len(white_queens) - len(black_queens)) + 20000*(len(black_king) - len(white_king))
         return evaluation
 
+# Nega Max Root Call
 def negaMaxRoot(board, depth, alpha, beta, color):
     global positions
     positions += 1
@@ -96,9 +97,11 @@ def negaMaxRoot(board, depth, alpha, beta, color):
             break
     return bestMove, value
 
+# Nega Max Child Call
 def negaMax(board, depth, alpha, beta, color):
     global positions
     positions += 1
+    # improvement: test for quiet positions, and add quiescence search for Horizon effect mitigation
     if depth == 0:
         return color * evaluateBoard(board)
     value = -inf
@@ -115,6 +118,7 @@ def negaMax(board, depth, alpha, beta, color):
 def move(board, depth, color):
     global positions
     positions = 0
+    # implementing the opening book + move analysis functions
     try:
         reader = chess.polyglot.open_reader('book\\book.bin')
     except FileNotFoundError:
