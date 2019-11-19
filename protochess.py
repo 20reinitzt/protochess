@@ -67,15 +67,13 @@ def evaluateBoard(board):
         black_rooks = pieces(4, False)
         white_queens = pieces(5, True)
         black_queens = pieces(5, False)
-        white_king = pieces(6, True)
-        black_king = pieces(6, False)
         # Calculate Material Advantage (centipawns)
         evaluation += sum(map(lambda x: wPawnTable[x], white_pawns)) - sum(map(lambda x: bPawnTable[x], black_pawns))
         evaluation += sum(map(lambda x: wKnightTable[x], white_knights)) - sum(map(lambda x: bKnightTable[x], black_knights))
         evaluation += sum(map(lambda x: wBishopTable[x], white_bishops)) - sum(map(lambda x: bBishopTable[x], black_bishops))
         evaluation += sum(map(lambda x: wRookTable[x], white_rooks)) - sum(map(lambda x: bRookTable[x], black_rooks))
         evaluation += sum(map(lambda x: wQueenTable[x], white_queens)) - sum(map(lambda x: bQueenTable[x], black_queens))
-        evaluation += 100*(len(white_pawns) - len(black_pawns)) + 310*(len(white_knights) - len(black_knights)) + 320*(len(white_bishops) - len(black_bishops)) + 500*(len(white_rooks) - len(black_rooks)) + 900*(len(white_queens) - len(black_queens)) + 20000*(len(black_king) - len(white_king))
+        evaluation += 100*(len(white_pawns) - len(black_pawns)) + 310*(len(white_knights) - len(black_knights)) + 320*(len(white_bishops) - len(black_bishops)) + 500*(len(white_rooks) - len(black_rooks)) + 900*(len(white_queens) - len(black_queens))
         return evaluation
 
 # Nega Max Root Call
@@ -87,7 +85,7 @@ def negaMaxRoot(board, depth, alpha, beta, color):
     bestMove = next(moves)
     for move in moves:
         board.push(move)
-        boardValue = -1 * negaMax(board, depth - 1, -1 * beta, -1 * alpha, -1 * color)
+        boardValue = -1 * negaMax(board, depth - 1, -beta, -alpha, -color)
         board.pop()
         if boardValue > value:
             value = boardValue
@@ -108,7 +106,7 @@ def negaMax(board, depth, alpha, beta, color):
     moves = board.generate_legal_moves()
     for move in moves:
         board.push(move)
-        value = max(value, -1 * negaMax(board, depth - 1, -1 * beta, -1 * alpha, -1 * color))
+        value = max(value, -1 * negaMax(board, depth - 1, -beta, -alpha, -color))
         board.pop()
         alpha = max(alpha, value)
         if alpha >= beta:
