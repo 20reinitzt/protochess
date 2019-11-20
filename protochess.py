@@ -175,7 +175,7 @@ def play():
             elapsed = time() - start
             print('best move is ' + str(computerMove))
             if not book:
-                print('Position advantage is calclulated as: ' + str(score) + ' (from ' + str(positions) + ' positions at '+ str(int(positions // elapsed)) +' pos/s)')
+                print('Position advantage is calclulated as: ' + str(score) + ' (from ' + str(positions) + ' positions at '+ str(int(positions // max(elapsed, 0.0001))) +' pos/s)')
             board.push(computerMove)
             print(board)
 
@@ -196,7 +196,7 @@ def analyze():
                 elapsed = time() - start
                 print('best move is ' + str(computerMove))
                 if not book:
-                    print('Position advantage is calclulated as: ' + str(score) + ' (from ' + str(positions) + ' positions at '+ str(int(positions // elapsed)) +' pos/s)')
+                    print('Position advantage is calclulated as: ' + str(score) + ' (from ' + str(positions) + ' positions at '+ str(int(positions // max(elapsed, 0.0001))) +' pos/s)')
                 user_input = input('Make Move (or type e to export the FEN of the position): ')
                 if user_input.lower() == 'e':
                     print(board.fen())
@@ -211,7 +211,7 @@ def analyze():
                 elapsed = time() - start
                 print('best move is ' + str(computerMove))
                 if not book:
-                    print('Position advantage is calclulated as: ' + str(score) + ' (from ' + str(positions) + ' positions at '+ str(int(positions // elapsed)) +' pos/s)')
+                    print('Position advantage is calclulated as: ' + str(score) + ' (from ' + str(positions) + ' positions at '+ str(int(positions // max(elapsed, 0.0001))) +' pos/s)')
                 user_input = input('Make Move (or type e to export the FEN of the position): ')
                 if user_input.lower() == 'e':
                     print(board.fen())
@@ -239,6 +239,6 @@ def play_itself(fen=''):
             elapsed = time() - start
             print('best move is ' + str(computerMove))
             if not book:
-                print('Position advantage is calclulated as: ' + str(score) + ' (from ' + str(positions) + ' positions at '+ str(int(positions // elapsed)) +' pos/s)')
+                print('Position advantage is calclulated as: ' + str(score) + ' (from ' + str(positions) + ' positions at '+ str(int(positions // max(elapsed, 0.0001))) +' pos/s)')
             board.push(computerMove)
             print(board)
