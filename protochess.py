@@ -50,6 +50,11 @@ bQueenTable = [-20,-10,-10, -5, -5,-10,-10,-20,
 -10,  0,  5,  0,  0,  0,  0,-10,
 -20,-10,-10, -5, -5,-10,-10,-20]
 wQueenTable = bQueenTable[::-1]
+# loading opening book reader
+try:
+    reader = chess.polyglot.open_reader('book\\book.bin')
+except FileNotFoundError:
+    print('No opening book found. make sure you have it in the right folder (path should be ..\\book.bin)')
 
 # Simple Evaluation Function
 def evaluateBoard(board):
@@ -141,17 +146,14 @@ def move(board, depth, color):
     global positions
     positions = 0
     # implementing the opening book + move analysis functions
-    try:
-        reader = chess.polyglot.open_reader('book\\book.bin')
-    except FileNotFoundError:
-        print('No opening book found. make sure you have it in the right folder (path should be ..\\book.bin)')
-        bestMove, value = negaMaxRoot(board, depth, -inf, inf, color)
-        return bestMove, value, 0
-    try:
-        return reader.weighted_choice(board).move, 0, 1
-    except IndexError:
-        bestMove, value = negaMaxRoot(board, depth, -inf, inf, color)
-        return bestMove, value, 0
+    if reader:
+        try:
+            return reader.weighted_choice(board).move, 0, 1
+        except IndexError:
+            bestMove, value = negaMaxRoot(board, depth, -inf, inf, color)
+            return bestMove, value, 0
+    bestMove, value = negaMaxRoot(board, depth, -inf, inf, color)
+    return bestMove, value, 0
 
 def play():
     global board
