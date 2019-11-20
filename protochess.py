@@ -58,9 +58,9 @@ except FileNotFoundError:
 
 # Simple Evaluation Function
 def evaluateBoard(board):
-        evaluation = 5 # setting bias to 5 to try and avoid draws
         if board.is_fivefold_repetition() or board.is_seventyfive_moves():
             return 0
+        evaluation = 5 # setting bias to 5 to try and avoid draws
         pieces = board.pieces
         # Get all pieces
         white_pawns = pieces(1, True)
