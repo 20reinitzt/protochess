@@ -53,7 +53,9 @@ wQueenTable = bQueenTable[::-1]
 
 # Simple Evaluation Function
 def evaluateBoard(board):
-        evaluation = 0
+        evaluation = 5 # setting bias to 5 to try and avoid draws
+        if board.result() == '1/2-1/2':
+            return 0
         pieces = board.pieces
         # Get all pieces
         white_pawns = pieces(1, True)
