@@ -103,7 +103,7 @@ def negaMaxRoot(board, depth, alpha, beta, color):
 def negaMax(board, depth, alpha, beta, color):
     global positions
     positions += 1
-    if board.is_fivefold_repetition() or board.is_seventyfive_moves():
+    if board.is_fivefold_repetition() or board.is_stalemate() or board.is_seventyfive_moves():
         return 0
     # improvement: test for quiet positions, and add quiescence search for Horizon effect mitigation
     if depth == 0:
