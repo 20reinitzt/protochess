@@ -6,7 +6,7 @@ for example, you could add better quiescence search, transposition tables, negaS
 
 use pip install python-chess to install dependencies
 
-Pypy3 is recommended, as it runs about 4-5x faster on pypy3 (50,000 nodes/s on pypy vs 10,000 nodes/s on python3)
+Pypy3 is recommended, as it runs about 4-6x faster on pypy3 (50,000-60,000 nodes/s on pypy vs 10,000-15,000 nodes/s on python3)
 
 # Usage
 to initialize, type from protochess import * <br />
