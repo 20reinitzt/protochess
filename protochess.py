@@ -123,7 +123,7 @@ def negaMax(board, depth, alpha, beta, color, maxDepth):
             break
     return value
 
-# starting the quiescence search code
+# starting the quiescence search code (only searches up to 3 ply extra from captures)
 def qSearch(board, alpha, beta, color, startingDepth, depth=1, maxDepth=3):
     global positions
     positions += 1
@@ -134,7 +134,7 @@ def qSearch(board, alpha, beta, color, startingDepth, depth=1, maxDepth=3):
         return beta
     if alpha < value:
         alpha = value
-    if depth < maxDepth:
+    if depth <= maxDepth:
         captureMoves = (move for move in board.generate_legal_moves() if board.is_capture(move))
         for move in captureMoves:
             board.push(move)
