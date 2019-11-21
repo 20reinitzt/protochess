@@ -203,8 +203,8 @@ def makeMove(colorToPlay, playerColor, depth):
         if score > 50000 or score < -50000:
             score = mateInXMoves(score)
         if not book:
-            print('Position advantage is calclulated as: ' + str(score) + ' (from ' + str(positions) + ' positions at '+ str(int(positions // max(elapsed, 0.0001))) +' pos/s)')
-        board.push(computerMove)       
+            print('Position advantage is calclulated as: ' + str(score) + ' (from ' + str(positions) + ' positions at '+ str(int(positions // max(elapsed, 0.00001))) +' pos/s)')
+        board.push(computerMove)
 
 # print the board (reversed if playing as black)
 def printBoard(board, playerColor):
@@ -251,7 +251,7 @@ def analyze(fen=''):
         if score > 50000 or score < -50000:
             score = mateInXMoves(score)
         if not book:
-            print('Position advantage is calclulated as: ' + str(score) + ' (from ' + str(positions) + ' positions at '+ str(int(positions // max(elapsed, 0.0001))) +' pos/s)')
+            print('Position advantage is calclulated as: ' + str(score) + ' (from ' + str(positions) + ' positions at '+ str(int(positions // max(elapsed, 0.00001))) +' pos/s)')
         user_input = input('Make Move (or type e to export the FEN of the position, or a to analyze another position): ')
         if user_input.lower() == 'e':
             print(board.fen())
@@ -284,7 +284,7 @@ def play_itself(fen=''):
         if score > 50000 or score < -50000:
             score = mateInXMoves(score)
         if not book:
-            print('Position advantage is calclulated as: ' + str(score) + ' (from ' + str(positions) + ' positions at '+ str(int(positions // max(elapsed, 0.0001))) +' pos/s)')
+            print('Position advantage is calclulated as: ' + str(score) + ' (from ' + str(positions) + ' positions at '+ str(int(positions // max(elapsed, 0.00001))) +' pos/s)')
         board.push(computerMove)
         print(board)
     if board.is_game_over():
