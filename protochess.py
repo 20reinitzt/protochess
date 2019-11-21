@@ -192,9 +192,14 @@ def makeMove(colorToPlay, playerColor):
             print(board.fen())
     board.push_uci(user_input)
     else:
-        start = time()
-        computerMove, score, book = move(board, depth, -1)
-        elapsed = time() - start
+        if colorToPlay:
+            start = time()
+            computerMove, score, book = move(board, depth, 1)
+            elapsed = time() - start
+        else:
+            start = time()
+            computerMove, score, book = move(board, depth, -1)
+            elapsed = time() - start
         print('best move is ' + str(computerMove))
         if score > 50000 or score < -50000:
             score = mateInXMoves(score)
