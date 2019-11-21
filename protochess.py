@@ -1,6 +1,6 @@
 import chess
 from time import time
-from math import inf
+from math import inf, isnan
 import chess.polyglot
 
 
@@ -57,31 +57,31 @@ except FileNotFoundError:
     print('No opening book found. make sure you have it in the right folder (path should be ..\\book.bin)')
 
 # Simple Evaluation Function
-def evaluateBoard(board):
-        evaluation = 5 # setting bias to 5 to try and avoid draws
-        pieces = board.pieces
-        # Get all pieces
-        white_pawns = pieces(1, True)
-        black_pawns = pieces(1, False)
-        white_knights = pieces(2, True)
-        black_knights = pieces(2, False)
-        white_bishops = pieces(3, True)
-        black_bishops = pieces(3, False)
-        white_rooks = pieces(4, True)
-        black_rooks = pieces(4, False)
-        white_queens = pieces(5, True)
-        black_queens = pieces(5, False)
-        # Calculate Material Advantage (centipawns)
-        evaluation += sum(map(lambda x: wPawnTable[x], white_pawns)) - sum(map(lambda x: bPawnTable[x], black_pawns))
-        evaluation += sum(map(lambda x: wKnightTable[x], white_knights)) - sum(map(lambda x: bKnightTable[x], black_knights))
-        evaluation += sum(map(lambda x: wBishopTable[x], white_bishops)) - sum(map(lambda x: bBishopTable[x], black_bishops))
-        evaluation += sum(map(lambda x: wRookTable[x], white_rooks)) - sum(map(lambda x: bRookTable[x], black_rooks))
-        evaluation += sum(map(lambda x: wQueenTable[x], white_queens)) - sum(map(lambda x: bQueenTable[x], black_queens))
-        evaluation += 100*(len(white_pawns) - len(black_pawns)) + 310*(len(white_knights) - len(black_knights)) + 320*(len(white_bishops) - len(black_bishops)) + 500*(len(white_rooks) - len(black_rooks)) + 900*(len(white_queens) - len(black_queens))
-        return evaluation
+def evaluateBoard(board, depth):
+    evaluation = 5 # setting bias to 5 to try and avoid draws
+    pieces = board.pieces
+    # Get all pieces
+    white_pawns = pieces(1, True)
+    black_pawns = pieces(1, False)
+    white_knights = pieces(2, True)
+    black_knights = pieces(2, False)
+    white_bishops = pieces(3, True)
+    black_bishops = pieces(3, False)
+    white_rooks = pieces(4, True)
+    black_rooks = pieces(4, False)
+    white_queens = pieces(5, True)
+    black_queens = pieces(5, False)
+    # Calculate Material Advantage (centipawns)
+    evaluation += sum(map(lambda x: wPawnTable[x], white_pawns)) - sum(map(lambda x: bPawnTable[x], black_pawns))
+    evaluation += sum(map(lambda x: wKnightTable[x], white_knights)) - sum(map(lambda x: bKnightTable[x], black_knights))
+    evaluation += sum(map(lambda x: wBishopTable[x], white_bishops)) - sum(map(lambda x: bBishopTable[x], black_bishops))
+    evaluation += sum(map(lambda x: wRookTable[x], white_rooks)) - sum(map(lambda x: bRookTable[x], black_rooks))
+    evaluation += sum(map(lambda x: wQueenTable[x], white_queens)) - sum(map(lambda x: bQueenTable[x], black_queens))
+    evaluation += 100*(len(white_pawns) - len(black_pawns)) + 310*(len(white_knights) - len(black_knights)) + 320*(len(white_bishops) - len(black_bishops)) + 500*(len(white_rooks) - len(black_rooks)) + 900*(len(white_queens) - len(black_queens))
+    return evaluation
 
 # Nega Max Root Call
-def negaMaxRoot(board, depth, alpha, beta, color):
+def negaMaxRoot(board, depth, alpha, beta, color, maxDepth):
     global positions
     positions += 1
     value = -inf
@@ -89,7 +89,7 @@ def negaMaxRoot(board, depth, alpha, beta, color):
     bestMove = next(moves)
     for move in moves:
         board.push(move)
-        boardValue = -1 * negaMax(board, depth - 1, -beta, -alpha, -color)
+        boardValue = -1 * negaMax(board, depth - 1, -beta, -alpha, -color, maxDepth)
         board.pop()
         if boardValue > value:
             value = boardValue
@@ -100,21 +100,23 @@ def negaMaxRoot(board, depth, alpha, beta, color):
     return bestMove, value
 
 # Nega Max Child Call
-def negaMax(board, depth, alpha, beta, color):
+def negaMax(board, depth, alpha, beta, color, maxDepth):
     global positions
     positions += 1
     if board.is_fivefold_repetition() or board.is_stalemate() or board.is_seventyfive_moves():
         return 0
+    if board.is_checkmate():
+        return color * (1 - (0.01*(maxDepth - depth))) * -99999 if board.turn else color * (1 - (0.01*(maxDepth - depth))) * 99999
     # improvement: test for quiet positions, and add quiescence search for Horizon effect mitigation
     if depth == 0:
         if board.is_capture(board.peek()):
-            return qSearch(board, -inf, inf, color)
+            return qSearch(board, -inf, inf, color, maxDepth)
         return color * evaluateBoard(board)
     value = -inf
     moves = board.generate_legal_moves()
     for move in moves:
         board.push(move)
-        value = max(value, -1 * negaMax(board, depth - 1, -beta, -alpha, -color))
+        value = max(value, -1 * negaMax(board, depth - 1, -beta, -alpha, -color, maxDepth))
         board.pop()
         alpha = max(alpha, value)
         if alpha >= beta:
@@ -122,10 +124,12 @@ def negaMax(board, depth, alpha, beta, color):
     return value
 
 # starting the quiescence search code
-def qSearch(board, alpha, beta, color, depth=0, maxDepth=2):
+def qSearch(board, alpha, beta, color, startingDepth, depth=1, maxDepth=3):
     global positions
     positions += 1
-    value = color * evaluateBoard(board)
+    if board.is_checkmate():
+        return color * (1 - (0.01*(maxDepth + depth))) * -99999 if board.turn else color * (1 - (0.01*(maxDepth + depth))) * 99999
+    value = color * evaluateBoard(board, depth)
     if value >= beta:
         return beta
     if alpha < value:
@@ -134,7 +138,7 @@ def qSearch(board, alpha, beta, color, depth=0, maxDepth=2):
         captureMoves = (move for move in board.generate_legal_moves() if board.is_capture(move))
         for move in captureMoves:
             board.push(move)
-            score = -1 * qSearch(board, -beta, -alpha, -color, depth + 1)
+            score = -1 * qSearch(board, -beta, -alpha, -color, depth + 1, maxDepth)
             board.pop()
             if score >= beta:
                 return beta
@@ -150,9 +154,9 @@ def move(board, depth, color):
         try:
             return reader.weighted_choice(board).move, 0, 1
         except IndexError:
-            bestMove, value = negaMaxRoot(board, depth, -inf, inf, color)
+            bestMove, value = negaMaxRoot(board, depth, -inf, inf, color, depth)
             return bestMove, value, 0
-    bestMove, value = negaMaxRoot(board, depth, -inf, inf, color)
+    bestMove, value = negaMaxRoot(board, depth, -inf, inf, color, depth)
     return bestMove, value, 0
 
 def play():
@@ -178,10 +182,13 @@ def play():
             computerMove, score, book = move(board, depth, -1)
             elapsed = time() - start
             print('best move is ' + str(computerMove))
+            if score > 50000 or (score < -50000 and score > -inf):
+                score = mateInXMoves(score)
             if not book:
                 print('Position advantage is calclulated as: ' + str(score) + ' (from ' + str(positions) + ' positions at '+ str(int(positions // max(elapsed, 0.0001))) +' pos/s)')
             board.push(computerMove)
             print(board)
+        print('Game Over! Result: {}'.format(board.result()))
 
 def analyze():
     global board
@@ -194,36 +201,26 @@ def analyze():
     if input('Analyze?') == 'y':
         depth = int(input('Search Depth (Don\'t go over 5 yet): '))
         while not board.is_game_over():
+            start = time()
             if board.turn:
-                start = time()
                 computerMove, score, book = move(board, depth, 1)
-                elapsed = time() - start
-                print('best move is ' + str(computerMove))
-                if not book:
-                    print('Position advantage is calclulated as: ' + str(score) + ' (from ' + str(positions) + ' positions at '+ str(int(positions // max(elapsed, 0.0001))) +' pos/s)')
-                user_input = input('Make Move (or type e to export the FEN of the position): ')
-                if user_input.lower() == 'e':
-                    print(board.fen())
-                try:
-                    board.push_uci(user_input)
-                except ValueError:
-                    continue
-                print(board)
             else:
-                start = time()
                 computerMove, score, book = move(board, depth, -1)
-                elapsed = time() - start
-                print('best move is ' + str(computerMove))
-                if not book:
-                    print('Position advantage is calclulated as: ' + str(score) + ' (from ' + str(positions) + ' positions at '+ str(int(positions // max(elapsed, 0.0001))) +' pos/s)')
-                user_input = input('Make Move (or type e to export the FEN of the position): ')
-                if user_input.lower() == 'e':
-                    print(board.fen())
-                try:
-                    board.push_uci(user_input)
-                except ValueError:
-                    continue
-                print(board)
+            elapsed = time() - start
+            print('best move is ' + str(computerMove))
+            if score > 50000 or (score < -50000 and score > -inf):
+                score = mateInXMoves(score)
+            if not book:
+                print('Position advantage is calclulated as: ' + str(score) + ' (from ' + str(positions) + ' positions at '+ str(int(positions // max(elapsed, 0.0001))) +' pos/s)')
+            user_input = input('Make Move (or type e to export the FEN of the position): ')
+            if user_input.lower() == 'e':
+                print(board.fen())
+            try:
+                board.push_uci(user_input)
+            except ValueError:
+                continue
+            print(board)
+        print('Game Over! Result: {}'.format(board.result()))
 
 def play_itself(fen=''):
     global board
@@ -242,7 +239,22 @@ def play_itself(fen=''):
                 computerMove, score, book = move(board, depth, -1)
             elapsed = time() - start
             print('best move is ' + str(computerMove))
+            if score > 50000 or (score < -50000 and score > -inf):
+                score = mateInXMoves(score)
             if not book:
                 print('Position advantage is calclulated as: ' + str(score) + ' (from ' + str(positions) + ' positions at '+ str(int(positions // max(elapsed, 0.0001))) +' pos/s)')
             board.push(computerMove)
             print(board)
+        if board.is_game_over():
+            print('Game Over! Result: {}'.format(board.result()))
+
+def mateInXMoves(score):
+    half_moves_to_mate = -(abs(score) - 99999) // (999.99)
+    if not isnan(half_moves_to_mate):
+        moves_to_mate = int((half_moves_to_mate  - 1) // 2) + 1
+        if (board.turn and score > 0) or (not board.turn and score < 0):
+            sideMated = 'white'
+        else:
+            sideMated = 'black'
+        score = 'Mate in {} for {}'.format(str(moves_to_mate), sideMated)
+    return score
