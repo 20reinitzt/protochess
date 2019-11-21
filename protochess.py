@@ -159,9 +159,8 @@ def move(board, depth, color):
     bestMove, value = negaMaxRoot(board, depth, -inf, inf, color, depth)
     return bestMove, value, 0
 
-def play():
+def play(fen=''):
     global board
-    fen = input('FEN?')
     if fen:
         board = chess.Board(fen)
     else:
@@ -190,37 +189,37 @@ def play():
             print(board)
         print('Game Over! Result: {}'.format(board.result()))
 
-def analyze():
+def analyze(fen=''):
     global board
-    fen = input('FEN?')
     if fen:
         board = chess.Board(fen)
     else:
         board = chess.Board()
     print(board)
-    if input('Analyze?') == 'y':
-        depth = int(input('Search Depth (Don\'t go over 5 yet): '))
-        while not board.is_game_over():
-            start = time()
-            if board.turn:
-                computerMove, score, book = move(board, depth, 1)
-            else:
-                computerMove, score, book = move(board, depth, -1)
-            elapsed = time() - start
-            print('best move is ' + str(computerMove))
-            if score > 50000 or score < -50000:
-                score = mateInXMoves(score)
-            if not book:
-                print('Position advantage is calclulated as: ' + str(score) + ' (from ' + str(positions) + ' positions at '+ str(int(positions // max(elapsed, 0.0001))) +' pos/s)')
-            user_input = input('Make Move (or type e to export the FEN of the position): ')
-            if user_input.lower() == 'e':
-                print(board.fen())
-            try:
-                board.push_uci(user_input)
-            except ValueError:
-                continue
-            print(board)
-        print('Game Over! Result: {}'.format(board.result()))
+    depth = int(input('Search Depth (Don\'t go over 5 yet): '))
+    while not board.is_game_over():
+        start = time()
+        if board.turn:
+            computerMove, score, book = move(board, depth, 1)
+        else:
+            computerMove, score, book = move(board, depth, -1)
+        elapsed = time() - start
+        print('best move is ' + str(computerMove))
+        if score > 50000 or score < -50000:
+            score = mateInXMoves(score)
+        if not book:
+            print('Position advantage is calclulated as: ' + str(score) + ' (from ' + str(positions) + ' positions at '+ str(int(positions // max(elapsed, 0.0001))) +' pos/s)')
+        user_input = input('Make Move (or type e to export the FEN of the position, or a to analyze another position): ')
+        if user_input.lower() == 'e':
+            print(board.fen())
+        if user_input.lower() =='a':
+            analyze(input('fen? '))
+        try:
+            board.push_uci(user_input)
+        except ValueError:
+            continue
+        print(board)
+    print('Game Over! Result: {}'.format(board.result()))
 
 def play_itself(fen=''):
     global board
@@ -228,25 +227,24 @@ def play_itself(fen=''):
         board = chess.Board(fen)
     else:
         board = chess.Board()
-    if input('play?') == 'y':
-        depth = int(input('Search Depth (Don\'t go over 5 yet): '))
-        movesToPlay = int(input('# of moves for each computer to play (type 0 for continuous play): ')) * 2
-        while (not board.is_game_over()) and (movesToPlay > len(board.move_stack) or movesToPlay == 0):
-            start = time()
-            if board.turn:
-                computerMove, score, book = move(board, depth, 1)
-            else:
-                computerMove, score, book = move(board, depth, -1)
-            elapsed = time() - start
-            print('best move is ' + str(computerMove))
-            if score > 50000 or score < -50000:
-                score = mateInXMoves(score)
-            if not book:
-                print('Position advantage is calclulated as: ' + str(score) + ' (from ' + str(positions) + ' positions at '+ str(int(positions // max(elapsed, 0.0001))) +' pos/s)')
-            board.push(computerMove)
-            print(board)
-        if board.is_game_over():
-            print('Game Over! Result: {}'.format(board.result()))
+    depth = int(input('Search Depth (Don\'t go over 5 yet): '))
+    movesToPlay = int(input('# of moves for each computer to play (type 0 for continuous play): ')) * 2
+    while (not board.is_game_over()) and (movesToPlay > len(board.move_stack) or movesToPlay == 0):
+        start = time()
+        if board.turn:
+            computerMove, score, book = move(board, depth, 1)
+        else:
+            computerMove, score, book = move(board, depth, -1)
+        elapsed = time() - start
+        print('best move is ' + str(computerMove))
+        if score > 50000 or score < -50000:
+            score = mateInXMoves(score)
+        if not book:
+            print('Position advantage is calclulated as: ' + str(score) + ' (from ' + str(positions) + ' positions at '+ str(int(positions // max(elapsed, 0.0001))) +' pos/s)')
+        board.push(computerMove)
+        print(board)
+    if board.is_game_over():
+        print('Game Over! Result: {}'.format(board.result()))
 
 def mateInXMoves(score):
     half_moves_to_mate = -(abs(score) - 99999) // (999.99)
