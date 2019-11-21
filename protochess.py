@@ -130,12 +130,12 @@ def negaMax(board, depth, alpha, beta, color, maxDepth):
     return value
 
 # starting the quiescence search code (only searches up to 3 ply extra from captures (any more and it runs slooooowwwwww))
-def qSearch(board, alpha, beta, color, startingDepth, depth=1, maxDepth=3):
+def qSearch(board, alpha, beta, color, startingDepth, depth=0, maxDepth=3):
     global positions
     positions += 1
     # mate test (values shallow mates more than deeper ones)
     if board.is_checkmate():
-        return color * (1 - (0.01*(maxDepth + depth))) * -99999 if board.turn else color * (1 - (0.01*(maxDepth + depth))) * 99999
+        return color * (1 - (0.01*(startingDepth + depth))) * -99999 if board.turn else color * (1 - (0.01*(startingDepth + depth))) * 99999
     # get stand-pat for delta pruning
     value = color * evaluateBoard(board, depth)
     # alpha-beta cutoffs
@@ -143,7 +143,7 @@ def qSearch(board, alpha, beta, color, startingDepth, depth=1, maxDepth=3):
         return beta
     if alpha < value:
         alpha = value
-    if depth <= maxDepth:
+    if depth < maxDepth:
         captureMoves = (move for move in board.generate_legal_moves() if board.is_capture(move))
         for move in captureMoves:
             board.push(move)
@@ -173,7 +173,7 @@ def move(board, depth, color):
 # calculates how many moves before computer sees mate
 def mateInXMoves(score):
     # uses the score to calculate the depth of mate
-    half_moves_to_mate = -(abs(score) - 99999) // (999.99)
+    half_moves_to_mate = (-(abs(score) - 99999) // (999.99))
     if not isnan(half_moves_to_mate):
         moves_to_mate = int((half_moves_to_mate  - 1) // 2) + 1
         if (board.turn and score > 0) or (not board.turn and score < 0):
@@ -208,7 +208,7 @@ def makeMove(colorToPlay, playerColor, depth):
 
 # print the board (reversed if playing as black)
 def printBoard(board, playerColor):
-    if playerColor == 'w':
+    if playerColor == 'w' or playerColor == True:
         print(board)
     else:
         print(str(board)[::-1])
@@ -261,7 +261,7 @@ def analyze(fen=''):
             board.push_uci(user_input)
         except ValueError:
             continue
-        print(board)
+        printBoard(board, board.turn)
     print('Game Over! Result: {}'.format(board.result()))
 
 # let the computer play itself for a set number of moves (or until game is over)
