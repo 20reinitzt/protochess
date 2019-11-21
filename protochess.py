@@ -2,8 +2,6 @@ import chess
 from time import time
 from math import inf, isnan
 import chess.polyglot
-
-
 # Parameters will be implemented soon
 
 # piece square tables
@@ -158,6 +156,7 @@ def qSearch(board, alpha, beta, color, startingDepth, depth=1, maxDepth=3):
                 alpha = score
     return alpha
 
+# computer move function
 def move(board, depth, color):
     global positions
     positions = 0
@@ -205,9 +204,9 @@ def makeMove(colorToPlay, playerColor):
             score = mateInXMoves(score)
         if not book:
             print('Position advantage is calclulated as: ' + str(score) + ' (from ' + str(positions) + ' positions at '+ str(int(positions // max(elapsed, 0.0001))) +' pos/s)')
-        board.push(computerMove)
-        
+        board.push(computerMove)       
 
+# play against the computer
 def play(fen=''):
     global board
     if fen:
@@ -225,6 +224,7 @@ def play(fen=''):
         print(board)
     print('Game Over! Result: {}'.format(board.result()))
 
+# analyze a position
 def analyze(fen=''):
     global board
     if fen:
@@ -257,6 +257,7 @@ def analyze(fen=''):
         print(board)
     print('Game Over! Result: {}'.format(board.result()))
 
+# let the computer play itself for a set number of moves (or until game is over)
 def play_itself(fen=''):
     global board
     if fen:
