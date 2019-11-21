@@ -109,7 +109,7 @@ def negaMaxRoot(board, depth, alpha, beta, color, maxDepth):
 def negaMax(board, depth, alpha, beta, color, maxDepth):
     global positions
     positions += 1
-   # draw and mate checking
+   # draw and mate checking (values shallow mates more than deeper ones)
     if board.is_fivefold_repetition() or board.is_stalemate() or board.is_seventyfive_moves():
         return 0
     if board.is_checkmate():
@@ -131,11 +131,11 @@ def negaMax(board, depth, alpha, beta, color, maxDepth):
             break
     return value
 
-# starting the quiescence search code (only searches up to 3 ply extra from captures)
+# starting the quiescence search code (only searches up to 3 ply extra from captures (any more and it runs slooooowwwwww))
 def qSearch(board, alpha, beta, color, startingDepth, depth=1, maxDepth=3):
     global positions
     positions += 1
-    # mate test
+    # mate test (values shallow mates more than deeper ones)
     if board.is_checkmate():
         return color * (1 - (0.01*(maxDepth + depth))) * -99999 if board.turn else color * (1 - (0.01*(maxDepth + depth))) * 99999
     # get stand-pat for delta pruning
@@ -170,7 +170,21 @@ def move(board, depth, color):
             return bestMove, value, 0
     bestMove, value = negaMaxRoot(board, depth, -inf, inf, color, depth)
     return bestMove, value, 0
-   
+
+# calculates how many moves before computer sees mate
+def mateInXMoves(score):
+    # uses the score to calculate the depth of mate
+    half_moves_to_mate = -(abs(score) - 99999) // (999.99)
+    if not isnan(half_moves_to_mate):
+        moves_to_mate = int((half_moves_to_mate  - 1) // 2) + 1
+        if (board.turn and score > 0) or (not board.turn and score < 0):
+            sideMated = 'white'
+        else:
+            sideMated = 'black'
+        score = 'Mate in {} for {}'.format(str(moves_to_mate), sideMated)
+    return score
+
+# allows the computer to play as either white or black
 def makeMove(colorToPlay, playerColor):
     if colorToPlay == (playerColor == 'w'):
     user_input = input('Make Move (or type e to export the FEN of the position): ')
@@ -262,14 +276,5 @@ def play_itself(fen=''):
         print(board)
     if board.is_game_over():
         print('Game Over! Result: {}'.format(board.result()))
-
-def mateInXMoves(score):
-    half_moves_to_mate = -(abs(score) - 99999) // (999.99)
-    if not isnan(half_moves_to_mate):
-        moves_to_mate = int((half_moves_to_mate  - 1) // 2) + 1
-        if (board.turn and score > 0) or (not board.turn and score < 0):
-            sideMated = 'white'
-        else:
-            sideMated = 'black'
-        score = 'Mate in {} for {}'.format(str(moves_to_mate), sideMated)
-    return score
+    else:
+        print('completed {} half-moves, program complete.'.format(len(board.move_stack)))
