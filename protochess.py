@@ -5,6 +5,8 @@ import chess.polyglot
 
 
 # Parameters will be implemented soon
+
+# piece square tables
 bPawnTable = [0,  0,  0,  0,  0,  0,  0,  0,
 50, 50, 50, 50, 50, 50, 50, 50,
 10, 10, 20, 30, 30, 20, 10, 10,
@@ -50,6 +52,7 @@ bQueenTable = [-20,-10,-10, -5, -5,-10,-10,-20,
 -10,  0,  5,  0,  0,  0,  0,-10,
 -20,-10,-10, -5, -5,-10,-10,-20]
 wQueenTable = bQueenTable[::-1]
+
 # loading opening book reader
 try:
     reader = chess.polyglot.open_reader('book\\book.bin')
@@ -72,11 +75,13 @@ def evaluateBoard(board, depth):
     white_queens = pieces(5, True)
     black_queens = pieces(5, False)
     # Calculate Material Advantage (centipawns)
+    # mapping pieces to piece-square tables
     evaluation += sum(map(lambda x: wPawnTable[x], white_pawns)) - sum(map(lambda x: bPawnTable[x], black_pawns))
     evaluation += sum(map(lambda x: wKnightTable[x], white_knights)) - sum(map(lambda x: bKnightTable[x], black_knights))
     evaluation += sum(map(lambda x: wBishopTable[x], white_bishops)) - sum(map(lambda x: bBishopTable[x], black_bishops))
     evaluation += sum(map(lambda x: wRookTable[x], white_rooks)) - sum(map(lambda x: bRookTable[x], black_rooks))
     evaluation += sum(map(lambda x: wQueenTable[x], white_queens)) - sum(map(lambda x: bQueenTable[x], black_queens))
+    # calculating material advantage
     evaluation += 100*(len(white_pawns) - len(black_pawns)) + 310*(len(white_knights) - len(black_knights)) + 320*(len(white_bishops) - len(black_bishops)) + 500*(len(white_rooks) - len(black_rooks)) + 900*(len(white_queens) - len(black_queens))
     return evaluation
 
@@ -94,6 +99,7 @@ def negaMaxRoot(board, depth, alpha, beta, color, maxDepth):
         if boardValue > value:
             value = boardValue
             bestMove = move
+        # implementing alpha-beta cutoff
         alpha = max(alpha, value)
         if alpha >= beta:
             break
@@ -103,11 +109,12 @@ def negaMaxRoot(board, depth, alpha, beta, color, maxDepth):
 def negaMax(board, depth, alpha, beta, color, maxDepth):
     global positions
     positions += 1
+   # draw and mate checking
     if board.is_fivefold_repetition() or board.is_stalemate() or board.is_seventyfive_moves():
         return 0
     if board.is_checkmate():
         return color * (1 - (0.01*(maxDepth - depth))) * -99999 if board.turn else color * (1 - (0.01*(maxDepth - depth))) * 99999
-    # improvement: test for quiet positions, and add quiescence search for Horizon effect mitigation
+    # testing for 'noisy' positions, and quiescence searching them for Horizon effect mitigation
     if depth == 0:
         if board.is_capture(board.peek()):
             return qSearch(board, -inf, inf, color, maxDepth)
@@ -118,6 +125,7 @@ def negaMax(board, depth, alpha, beta, color, maxDepth):
         board.push(move)
         value = max(value, -1 * negaMax(board, depth - 1, -beta, -alpha, -color, maxDepth))
         board.pop()
+        # implementing alpha-beta cutoff
         alpha = max(alpha, value)
         if alpha >= beta:
             break
@@ -127,9 +135,12 @@ def negaMax(board, depth, alpha, beta, color, maxDepth):
 def qSearch(board, alpha, beta, color, startingDepth, depth=1, maxDepth=3):
     global positions
     positions += 1
+    # mate test
     if board.is_checkmate():
         return color * (1 - (0.01*(maxDepth + depth))) * -99999 if board.turn else color * (1 - (0.01*(maxDepth + depth))) * 99999
+    # get stand-pat for delta pruning
     value = color * evaluateBoard(board, depth)
+    # alpha-beta cutoffs
     if value >= beta:
         return beta
     if alpha < value:
@@ -140,6 +151,7 @@ def qSearch(board, alpha, beta, color, startingDepth, depth=1, maxDepth=3):
             board.push(move)
             score = -1 * qSearch(board, -beta, -alpha, -color, depth + 1, maxDepth)
             board.pop()
+            # more alpha-beta cutoffs
             if score >= beta:
                 return beta
             if score > alpha:
