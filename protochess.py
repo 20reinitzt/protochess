@@ -184,12 +184,12 @@ def mateInXMoves(score):
     return score
 
 # allows the computer to play as either white or black
-def makeMove(colorToPlay, playerColor):
+def makeMove(colorToPlay, playerColor, depth):
     if colorToPlay == (playerColor == 'w'):
-    user_input = input('Make Move (or type e to export the FEN of the position): ')
+        user_input = input('Make Move (or type e to export the FEN of the position): ')
         if user_input.lower() == 'e':
             print(board.fen())
-    board.push_uci(user_input)
+        board.push_uci(user_input)
     else:
         if colorToPlay:
             start = time()
@@ -206,6 +206,13 @@ def makeMove(colorToPlay, playerColor):
             print('Position advantage is calclulated as: ' + str(score) + ' (from ' + str(positions) + ' positions at '+ str(int(positions // max(elapsed, 0.0001))) +' pos/s)')
         board.push(computerMove)       
 
+# print the board (reversed if playing as black)
+def printBoard(board, playerColor):
+    if playerColor == 'w':
+        print(board)
+    else:
+        print(str(board)[::-1])
+
 # play against the computer
 def play(fen=''):
     global board
@@ -213,15 +220,15 @@ def play(fen=''):
         board = chess.Board(fen)
     else:
         board = chess.Board()
-    print(board)
-    depth = int(input('Difficulty Level (Search Depth) (Don\'t go over 5 yet): '))
     playerColor = input('play as (w)hite or (b)lack? ')[0].lower()
+    printBoard(board, playerColor)
+    depth = int(input('Difficulty Level (Search Depth) (Don\'t go over 5 yet): '))
     while not board.is_game_over():
         try:
-            makeMove(board.turn, playerColor)
+            makeMove(board.turn, playerColor, depth)
         except ValueError:
             continue
-        print(board)
+        printBoard(board, playerColor)
     print('Game Over! Result: {}'.format(board.result()))
 
 # analyze a position
