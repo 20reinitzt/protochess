@@ -170,6 +170,24 @@ def move(board, depth, color):
             return bestMove, value, 0
     bestMove, value = negaMaxRoot(board, depth, -inf, inf, color, depth)
     return bestMove, value, 0
+   
+def makeMove(colorToPlay, playerColor):
+    if colorToPlay == (playerColor == 'w'):
+    user_input = input('Make Move (or type e to export the FEN of the position): ')
+        if user_input.lower() == 'e':
+            print(board.fen())
+    board.push_uci(user_input)
+    else:
+        start = time()
+        computerMove, score, book = move(board, depth, -1)
+        elapsed = time() - start
+        print('best move is ' + str(computerMove))
+        if score > 50000 or score < -50000:
+            score = mateInXMoves(score)
+        if not book:
+            print('Position advantage is calclulated as: ' + str(score) + ' (from ' + str(positions) + ' positions at '+ str(int(positions // max(elapsed, 0.0001))) +' pos/s)')
+        board.push(computerMove)
+        
 
 def play(fen=''):
     global board
@@ -178,28 +196,15 @@ def play(fen=''):
     else:
         board = chess.Board()
     print(board)
-    if input('Play?') == 'y':
-        depth = int(input('Difficulty Level (Search Depth) (Don\'t go over 5 yet): '))
-        while not board.is_game_over():
-            user_input = input('Make Move (or type e to export the FEN of the position): ')
-            if user_input.lower() == 'e':
-                print(board.fen())
-            try:
-                board.push_uci(user_input)
-            except ValueError:
-                continue
-            print(board)
-            start = time()
-            computerMove, score, book = move(board, depth, -1)
-            elapsed = time() - start
-            print('best move is ' + str(computerMove))
-            if score > 50000 or score < -50000:
-                score = mateInXMoves(score)
-            if not book:
-                print('Position advantage is calclulated as: ' + str(score) + ' (from ' + str(positions) + ' positions at '+ str(int(positions // max(elapsed, 0.0001))) +' pos/s)')
-            board.push(computerMove)
-            print(board)
-        print('Game Over! Result: {}'.format(board.result()))
+    depth = int(input('Difficulty Level (Search Depth) (Don\'t go over 5 yet): '))
+    playerColor = input('play as (w)hite or (b)lack? ')[0].lower()
+    while not board.is_game_over():
+        try:
+            makeMove(board.turn, playerColor)
+        except ValueError:
+            continue
+        print(board)
+    print('Game Over! Result: {}'.format(board.result()))
 
 def analyze(fen=''):
     global board
