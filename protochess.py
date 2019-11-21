@@ -182,7 +182,7 @@ def play():
             computerMove, score, book = move(board, depth, -1)
             elapsed = time() - start
             print('best move is ' + str(computerMove))
-            if score > 50000 or (score < -50000 and score > -inf):
+            if score > 50000 or score < -50000:
                 score = mateInXMoves(score)
             if not book:
                 print('Position advantage is calclulated as: ' + str(score) + ' (from ' + str(positions) + ' positions at '+ str(int(positions // max(elapsed, 0.0001))) +' pos/s)')
@@ -208,7 +208,7 @@ def analyze():
                 computerMove, score, book = move(board, depth, -1)
             elapsed = time() - start
             print('best move is ' + str(computerMove))
-            if score > 50000 or (score < -50000 and score > -inf):
+            if score > 50000 or score < -50000:
                 score = mateInXMoves(score)
             if not book:
                 print('Position advantage is calclulated as: ' + str(score) + ' (from ' + str(positions) + ' positions at '+ str(int(positions // max(elapsed, 0.0001))) +' pos/s)')
@@ -239,7 +239,7 @@ def play_itself(fen=''):
                 computerMove, score, book = move(board, depth, -1)
             elapsed = time() - start
             print('best move is ' + str(computerMove))
-            if score > 50000 or (score < -50000 and score > -inf):
+            if score > 50000 or score < -50000:
                 score = mateInXMoves(score)
             if not book:
                 print('Position advantage is calclulated as: ' + str(score) + ' (from ' + str(positions) + ' positions at '+ str(int(positions // max(elapsed, 0.0001))) +' pos/s)')
