@@ -129,7 +129,7 @@ def negaMax(board, depth, alpha, beta, color, maxDepth):
             break
     return value
 
-# starting the quiescence search code (only searches up to 3 ply extra from captures (any more and it runs slooooowwwwww))
+# starting the quiescence search code (only searches up to 4 ply extra from captures (moved back to 3, too slow at 4 with higher depths))
 def qSearch(board, alpha, beta, color, startingDepth, depth=0, maxDepth=3):
     global positions
     positions += 1
