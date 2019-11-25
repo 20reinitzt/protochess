@@ -129,8 +129,8 @@ def negaMax(board, depth, alpha, beta, color, maxDepth):
             break
     return value
 
-# starting the quiescence search code (only searches up to 4 ply extra from captures (moved back to 3, too slow at 4 with higher depths))
-def qSearch(board, alpha, beta, color, startingDepth, depth=0, maxDepth=3):
+# starting the quiescence search code (only searches up to 4 ply extra from noisy moves)
+def qSearch(board, alpha, beta, color, startingDepth, depth=0, maxDepth=4):
     global positions
     positions += 1
     # mate test (values shallow mates more than deeper ones)
