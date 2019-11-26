@@ -156,6 +156,17 @@ def qSearch(board, alpha, beta, color, startingDepth, depth=0, maxDepth=4):
                 alpha = score
     return alpha
 
+# iterative deepening function (for when I implement transposition tables
+def iterativeDeepening(board, color, time):
+    global positions
+    positions, depth = 0, 1
+    finalTime = time() + 10
+    while initialTime < time():
+       bestMove, value = negaMaxRoot(board, depth, -inf, inf, color, depth)
+       depth += 1
+    return bestMove, value, 0
+
+
 # computer move function
 def move(board, depth, color):
     global positions
