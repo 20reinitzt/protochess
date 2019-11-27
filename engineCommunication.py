@@ -18,7 +18,7 @@ def mateInXMoves(board, score):
     return score
 
 # Allows engines of differing depths to play themselves
-def playEngines(engine1Depth, engine2Depth, printBoard=True, fen=''):
+def playEngines(engine1Depth, engine2Depth, fen='', printBoard=True):
     if fen:
         board = chess.Board(fen)
     else:
@@ -44,7 +44,8 @@ def playEngines(engine1Depth, engine2Depth, printBoard=True, fen=''):
         board.push(computerMove)
         engine1.updateBoard(board)
         engine2.updateBoard(board)
-        print(board)
+        if printBoard:
+            print(board)
     if board.is_game_over():
         print('Game Over! Result: {}'.format(board.result()))
     else:
