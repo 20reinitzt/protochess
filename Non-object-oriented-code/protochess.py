@@ -137,7 +137,7 @@ def qSearch(board, alpha, beta, color, startingDepth, depth=0, maxDepth=4):
     if board.is_checkmate():
         return color * (1 - (0.01*(startingDepth + depth))) * -99999 if board.turn else color * (1 - (0.01*(startingDepth + depth))) * 99999
     # get stand-pat for delta pruning
-    value = color * evaluateBoard(board, depth)
+    value = color * evaluateBoard(board)
     # alpha-beta cutoffs
     if value >= beta:
         return beta
