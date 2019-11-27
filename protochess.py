@@ -58,7 +58,7 @@ except FileNotFoundError:
     print('No opening book found. make sure you have it in the right folder (path should be ..\\book.bin)')
 
 # Simple Evaluation Function
-def evaluateBoard(board, depth):
+def evaluateBoard(board):
     evaluation = 5 # setting bias to 5 to try and avoid draws
     pieces = board.pieces
     # Get all pieces
