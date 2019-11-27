@@ -177,7 +177,7 @@ class Engine(object):
         # implementing the opening book + move analysis functions
         if self.reader:
             try:
-                return self.reader.weighted_choice(board).move, 0, 1
+                return self.reader.weighted_choice(self.board).move, 0, 1
             except IndexError:
                 bestMove, value = self.negaMaxRoot(self.board, self.depth, -inf, inf, self.color, self.depth)
                 return bestMove, value, 0
