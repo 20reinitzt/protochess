@@ -49,6 +49,15 @@ bQueenTable = [-20,-10,-10, -5, -5,-10,-10,-20,
 -10,  0,  5,  0,  0,  0,  0,-10,
 -20,-10,-10, -5, -5,-10,-10,-20]
 wQueenTable = bQueenTable[::-1]
+bKingTable = [-30,-40,-40,-50,-50,-40,-40,-30,
+-30,-40,-40,-50,-50,-40,-40,-30,
+-30,-40,-40,-50,-50,-40,-40,-30,
+-30,-40,-40,-50,-50,-40,-40,-30,
+-20,-30,-30,-40,-40,-30,-30,-20,
+-10,-20,-20,-20,-20,-20,-20,-10,
+ 20, 20,  0,  0,  0,  0, 20, 20,
+ 20, 30, 10,  0,  0, 10, 30, 20]
+ wKingTable = bKingTable[::-1]
 
 class Engine(object):
 
@@ -86,6 +95,8 @@ class Engine(object):
         black_rooks = pieces(4, False)
         white_queens = pieces(5, True)
         black_queens = pieces(5, False)
+        white_kings = pieces(6, True)
+        black_kings = pieces(6, False)
         # Calculate Material Advantage (centipawns)
         # mapping pieces to piece-square tables
         evaluation += sum(map(lambda x: wPawnTable[x], white_pawns)) - sum(map(lambda x: bPawnTable[x], black_pawns))
@@ -93,6 +104,7 @@ class Engine(object):
         evaluation += sum(map(lambda x: wBishopTable[x], white_bishops)) - sum(map(lambda x: bBishopTable[x], black_bishops))
         evaluation += sum(map(lambda x: wRookTable[x], white_rooks)) - sum(map(lambda x: bRookTable[x], black_rooks))
         evaluation += sum(map(lambda x: wQueenTable[x], white_queens)) - sum(map(lambda x: bQueenTable[x], black_queens))
+        evaluation += sum(map(lambda x: wKingTable[x], white_kings)) - sum(map(lambda x: bKingTable[x], black_kings))
         # calculating material advantage
         evaluation += 100*(len(white_pawns) - len(black_pawns)) + 310*(len(white_knights) - len(black_knights)) + 320*(len(white_bishops) - len(black_bishops)) + 500*(len(white_rooks) - len(black_rooks)) + 900*(len(white_queens) - len(black_queens))
         return evaluation
