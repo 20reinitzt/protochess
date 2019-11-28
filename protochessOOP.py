@@ -144,7 +144,7 @@ class Engine(object):
         moves = board.generate_legal_moves()
         for move in moves:
             moveEvals.append(color * self.evaluateBoard(board))
-        sortedMoves = [move for (move, moveEval) in sort(zip(list(moves), moveEvals))]
+        sortedMoves = [move for (move, moveEval) in sorted(zip(list(moves), moveEvals))]
         for move in sortedMoves:
             board.push(move)
             value = max(value, -1 * self.negaMax(board, depth - 1, -beta, -alpha, -color, maxDepth))
