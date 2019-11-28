@@ -51,7 +51,7 @@ bQueenTable = [-20,-10,-10, -5, -5,-10,-10,-20,
 wQueenTable = bQueenTable[::-1]
 
 class Engine(object):
-    
+
     # initializes all required engine variables
     def __init__(self, depth, color, board, openingBookPath = 'book\\book.bin'):
         self.depth = depth
@@ -128,6 +128,7 @@ class Engine(object):
     def negaMax(self, board, depth, alpha, beta, color, maxDepth):
         global positions
         positions += 1
+        moveEvals = []
        # draw and mate checking (values shallow mates more than deeper ones)
         if board.is_fivefold_repetition() or board.is_stalemate() or board.is_seventyfive_moves():
             return 0
@@ -139,8 +140,12 @@ class Engine(object):
                 return self.qSearch(board, alpha, beta, color, maxDepth)
             return color * self.evaluateBoard(board)
         value = -inf
+        # move ordering code
         moves = board.generate_legal_moves()
         for move in moves:
+            moveEvals.append(color * self.evaluateBoard(board))
+        sortedMoves = [move for (move, moveEval) in sort(zip(list(moves), moveEvals))]
+        for move in sortedMoves:
             board.push(move)
             value = max(value, -1 * self.negaMax(board, depth - 1, -beta, -alpha, -color, maxDepth))
             board.pop()
