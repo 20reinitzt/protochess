@@ -140,12 +140,7 @@ class Engine(object):
                 return self.qSearch(board, alpha, beta, color, maxDepth)
             return color * self.evaluateBoard(board)
         value = -inf
-        # move ordering code
-        moves = board.generate_legal_moves()
-        for move in moves:
-            moveEvals.append(color * self.evaluateBoard(board))
-        sortedMoves = [move for (move, moveEval) in sorted(zip(list(moves), moveEvals))]
-        for move in sortedMoves:
+        for move in board.generate_legal_moves():
             board.push(move)
             value = max(value, -1 * self.negaMax(board, depth - 1, -beta, -alpha, -color, maxDepth))
             board.pop()
