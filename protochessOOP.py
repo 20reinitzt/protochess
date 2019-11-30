@@ -66,6 +66,7 @@ class Engine(object):
         self.depth = depth
         self.color = color
         self.board = board
+        self.positions = 0
         try:
             self.reader = chess.polyglot.open_reader(openingBookPath)
         except FileNotFoundError:
@@ -111,8 +112,7 @@ class Engine(object):
 
     # qSearch function (goes up to 4 ply from end depth)
     def qSearch(self, board, alpha, beta, color, startingDepth, depth=0, maxDepth=4):
-        global positions
-        positions += 1
+        self.positions += 1
         # mate test (values shallow mates more than deeper ones)
         if board.is_checkmate():
             return color * (1 - (0.01*(startingDepth + depth))) * -99999 if board.turn else color * (1 - (0.01*(startingDepth + depth))) * 99999
@@ -121,8 +121,7 @@ class Engine(object):
         # alpha-beta cutoffs
         if value >= beta:
             return beta
-        if alpha < value:
-            alpha = value
+        alpha = max(alpha, value)
         if depth < maxDepth:
             captureMoves = (move for move in board.generate_legal_moves() if (board.is_capture(move) or board.is_check()))
             for move in captureMoves:
@@ -132,15 +131,12 @@ class Engine(object):
                 # more alpha-beta cutoffs
                 if score >= beta:
                     return beta
-                if score > alpha:
-                    alpha = score
+                alpha = max(alpha, score)
         return alpha
 
     # Nega Max Child Call
     def negaMax(self, board, depth, alpha, beta, color, maxDepth):
-        global positions
-        positions += 1
-        moveEvals = []
+        self.positions += 1
        # draw and mate checking (values shallow mates more than deeper ones)
         if board.is_fivefold_repetition() or board.is_stalemate() or board.is_seventyfive_moves():
             return 0
@@ -164,8 +160,7 @@ class Engine(object):
 
     # Nega Max Root Call
     def negaMaxRoot(self, board, depth, alpha, beta, color, maxDepth):
-        global positions
-        positions += 1
+        self.positions += 1
         value = -inf
         moves = board.generate_legal_moves()
         bestMove = next(moves)
@@ -182,10 +177,13 @@ class Engine(object):
                 break
         return bestMove, value
 
+    # where I will implement negaScout (PVS)
+    def principalVariationSearch(board, depth):
+        pass
+
     # Engine move function (gets move)
     def move(self):
-        global positions
-        positions = 0
+        self.positions = 0
         # implementing the opening book + move analysis functions
         if self.reader:
             try:
@@ -196,10 +194,14 @@ class Engine(object):
         bestMove, value = self.negaMaxRoot(self.board, self.depth, -inf, inf, self.color, self.depth)
         return bestMove, value, 0
 
+    # writing the iterative deepening function for when I implement negaScout (PVS)
+    def iterativeDeepening(self):
+        for depth in range(self.depth):
+            self.principalVariationSearch(self.board, self.depth)
+
     # Gets engine move, and returns some stats about engine move
     def moveWithStats(self):
-        global positions
         self.initialTime = time()
         bestMove, value, book = self.move()
         self.timeTaken = time() - self.initialTime
-        return bestMove, value, book, max(self.timeTaken, 0.001), positions, positions // max(self.timeTaken, 0.001)
+        return bestMove, value, book, max(self.timeTaken, 0.001),self.positions,self.positions // max(self.timeTaken, 0.001)

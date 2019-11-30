@@ -98,7 +98,7 @@ def analyzeWithEngine(engineDepth, fen=''):
         board = chess.Board()
     engineColor = 1 if board.turn else -1
     analysisEngine = Engine(engineDepth, engineColor, board)
-    computerMove, value, book, timeTaken, positions, positionsPerSecond = computerEngine.moveWithStats()
+    computerMove, value, book, timeTaken, positions, positionsPerSecond = analysisEngine.moveWithStats()
     if abs(value) > 50000:
         value = mateInXMoves(board, value)
         print('Best Move is: {} \nPositon advantage is calculated as {} from {} positions in {} seconds ({} pos/s)'.format(computerMove, value, positions, timeTaken, positionsPerSecond))
