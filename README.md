@@ -14,5 +14,5 @@ to play against the computer as white, type play() <br />
 to watch the computers play eachother, type play_itself() <br />
 to analyze a position type analyze() 
   
-# Elo
-after testing with lichess stockfish, it performs on the same level as stockfish level 4-5 at depth 4, so rough ELO guess would be 1400. I've been doing puzzles with it on lichess, and its puzzle rating seems to hover around 1700-1800. At depth 5, it takes significantly longer to analyze ( > 5 minutes in complex positions), but seems to perform at the level of stockfish level 6, and sometimes takes games against level 7. From this, I think it's rating at depth 5 is around 1700
+# Elojavascript:void(0);
+after testing with lichess it performs at a rough lichess level of 1500 on depth 4 (probably a rough elo of 1300-1350). Depth 5 performs at a +191 elo from depth 4 (tested with 50 self-play games). Extrapolation of this presents a rough elo of 1500 for depth 5
